@@ -23,7 +23,7 @@ function objectHandler(req, res) {
     for (let j = 2; j < rows[i].length; j++) {
       let parsedHobbies = parseInt(rows[i][j]);
 
-      if (parsedHobbies) {
+      if (Number.isNaN(parsedHobbies) === false) {
         throw new httpError.BadRequest(
           `Hobbies ${rows[i][j]} should be 'string' type.`
         );
@@ -46,7 +46,7 @@ function objectHandler(req, res) {
       } else {
         if (headers[j] === "Age") {
           let parsedAge = parseInt(row[j]);
-          if (!parsedAge) {
+          if (Number.isNaN(parsedAge) === true) {
             throw new httpError.BadRequest(
               `Age ${row[j]} should be of 'number' type`
             );
@@ -56,7 +56,7 @@ function objectHandler(req, res) {
 
         if (headers[j] === "Name") {
           let parsedName = parseInt(row[j]);
-          if (parsedName) {
+          if (Number.isNaN(parsedName) === false) {
             throw new httpError.BadRequest(
               `Name ${row[j]} should be of 'string' type.`
             );
