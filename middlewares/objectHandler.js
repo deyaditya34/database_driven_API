@@ -21,6 +21,13 @@ function objectHandler(req, res) {
   // Here the hobbies are parsed and stuffed in a nested Array.
   for (let i = 0; i < rows.length; i++) {
     for (let j = 2; j < rows[i].length; j++) {
+      let parsedHobbies = parseInt(rows[i][j]);
+
+      if (parsedHobbies) {
+        throw new httpError.BadRequest(
+          `Hobbies ${rows[i][j]} should be 'string' type.`
+        );
+      }
       rowHobbies.push(rows[i][j]);
     }
     hobbies.push(rowHobbies);
@@ -37,7 +44,25 @@ function objectHandler(req, res) {
         rowData[headers[j]] = hobbies[count];
         count++;
       } else {
-        rowData[headers[j]] = row[j];
+        if (headers[j] === "Age") {
+          let parsedAge = parseInt(row[j]);
+          if (!parsedAge) {
+            throw new httpError.BadRequest(
+              `Age ${row[j]} should be of 'number' type`
+            );
+          }
+          rowData[headers[j]] = parseInt(row[j]);
+        }
+
+        if (headers[j] === "Name") {
+          let parsedName = parseInt(row[j]);
+          if (parsedName) {
+            throw new httpError.BadRequest(
+              `Name ${row[j]} should be of 'string' type.`
+            );
+          }
+          rowData[headers[j]] = row[j];
+        }
       }
     }
     result.push(rowData);

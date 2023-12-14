@@ -17,9 +17,9 @@ if (Age) {
 if (Hobbies) {
   searchParams['Hobbies'] = Hobbies;
 }
-
+console.log(searchParams);
 const result = await searchData(searchParams);
-
+console.log(result)
 
 
 res.json({
