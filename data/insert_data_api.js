@@ -1,19 +1,25 @@
+const fs = require("fs");
 const buildApiHandler = require("../api-utils/build-api-handler");
-const dataformatChecker = require("../middlewares/dataFormatChecker");
-const objectHandler = require("../middlewares/objectHandler");
 const httpError = require("http-errors");
-const {createData} = require("./data.service")
+const { createData } = require("./data.service");
+const { parseCsvRecords } = require("../middlewares/csv_parser");
+const { fstat } = require("fs");
 
 async function controller(req, res) {
-  let objectParser = objectHandler(req, res)
-  
-  let result = await createData(objectParser);
-
+  let uploadedFiles = req.files;
+  uploadedFiles.map(async (file) => {
+    let parsedData = parseCsvRecords(file.path);
+    
+    if (req.body.collectionName) {
+      insertData = await createData(parsedData, req.body.collectionName);
+    } else {
+      insertData = await createData(parsedData);
+    }
+  });
 
   res.json({
     success: true,
-    data: result,
   });
 }
 
-module.exports = buildApiHandler([dataformatChecker, controller]);
+module.exports = buildApiHandler([controller]);

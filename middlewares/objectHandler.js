@@ -15,12 +15,16 @@ function objectHandler(req, res) {
     if (!Number.isNaN(parseInt(Name))) {
       throw new httpError.BadRequest(`Name ${Name} should be of string type`);
     }
+    
+    const invalidHobbies = Hobbies.filter(
+      (hobby) => !Number.isNaN(parseInt(hobby))
+    );
 
-    Hobbies.forEach(element => {
-      if (!Number.isNaN(parseInt(element))) {
-        throw new httpError.BadRequest(`Hobbies ${element} should be of string type`);
-      }
-    });
+    if (invalidHobbies.length) {
+      throw new httpError.BadRequest(
+        `Hobbies '${invalidHobbies.join(",")}' are invalid. Should be Text`
+      );
+    }
 
     return {
       Name,

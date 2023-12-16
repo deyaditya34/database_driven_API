@@ -1,14 +1,14 @@
 const db = require("../services/database.service");
 const config = require("../config");
 
-async function createData(data = []) {
-  return db.getCollection(config.COLLECTION_NAMES.database).insertMany(data);
+async function createData(data = [], collectionName = "database") {
+  return db.getCollection(collectionName).insertMany(data);
 }
 
 async function searchData(data) {
   console.log(data);
   return db
-    .getCollection(config.COLLECTION_NAMES.database)
+    .getCollection(collectionName)
     .find(data)
     .toArray();
 }
