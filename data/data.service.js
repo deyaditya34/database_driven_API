@@ -5,12 +5,8 @@ async function createData(data = [], collectionName = "database") {
   return db.getCollection(collectionName).insertMany(data);
 }
 
-async function searchData(data) {
-  console.log(data);
-  return db
-    .getCollection(collectionName)
-    .find(data)
-    .toArray();
+async function searchData(data, collectionName = "database") {
+  return db.getCollection(collectionName).find(data).toArray();
 }
 
 module.exports = { createData, searchData };

@@ -2,30 +2,33 @@ const buildApiHandler = require("../api-utils/build-api-handler");
 const { searchData } = require("./data.service");
 
 async function controller(req, res) {
-const {Name, Age, Hobbies} = req.query;
+  const reqBodyKeys = Object.keys(req.body);
 
-let searchParams = {};
+  let newReq = {};
 
-if (Name) {
-  searchParams['Name'] = Name;
+  const parsedQueries = reqBodyKeys.map((key) => {
+    if (key !== "collectionName") {
+      return (newReq[key] = req.body[key]);
+    }
+  });
+  let result;
+  if (req.body.collectionName) {
+     result = await searchData(newReq, req.body.collectionName);
+  } else {
+     result = await searchData(newReq)
+  }
+
+  if (!result) {
+    res.json({
+      message: "No data found",
+    });
+  } else {
+    res.json({
+      message: "data found",
+      success: result,
+    });
+  }
 }
 
-if (Age) {
-  searchParams['Age'] = Age;
-}
 
-if (Hobbies) {
-  searchParams['Hobbies'] = Hobbies;
-}
-console.log(searchParams);
-const result = await searchData(searchParams);
-console.log(result)
-
-
-res.json({
-  success: result
-})
-}
-
-
-module.exports = buildApiHandler([controller])
+module.exports = buildApiHandler([controller]);

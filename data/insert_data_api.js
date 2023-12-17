@@ -1,9 +1,7 @@
 const fs = require("fs");
 const buildApiHandler = require("../api-utils/build-api-handler");
-const httpError = require("http-errors");
 const { createData } = require("./data.service");
 const { parseCsvRecords } = require("../middlewares/csv_parser");
-const { fstat } = require("fs");
 
 async function controller(req, res) {
   let uploadedFiles = req.files;
