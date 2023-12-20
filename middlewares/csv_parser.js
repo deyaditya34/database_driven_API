@@ -1,47 +1,63 @@
 const fs = require("fs");
-const event = require("events");
+const readline = require("readline");
 
-function parseCsvRecords(filepath) {
-  const fileData = fs.readFileSync(filepath, { encoding: "utf-8" })
+async function parseCsvRecords(filepath, cb) {
+  const lineFeed = readline.createInterface(fs.createReadStream(filepath));
 
-  const [header, ...rows] = fileData.toString()
-    .split("\n")
-    .filter(isLineNotEmpty)
-    .map((line) => line.split(",").map(parseValue))
-    
-  return  rows.map((row) => buildObjectFromRow(row, header));
+  let header = null;
 
+  
+  lineFeed.on("line", async(line) => {
+    if (isLineNotEmpty(line)) {
+      const row = line.split(",").map(parseValue);
+
+      if (!header) {
+        header = row;
+      } else {
+        const record =  buildObjectFromRow(row, header);
+        await cb(record);
+      }
+    }
+  });
+
+  lineFeed.on("close", async() => {
+   await cb(null);
+  });
 }
 
 function isLineNotEmpty(line) {
-  return line.length !== 0
+  return line.length !== 0;
 }
 
 function parseValue(value) {
   if (!value) {
-    return null
+    return null;
   }
 
-  const number = Number(value)
+  const number = Number(value);
   if (!Number.isNaN(number)) {
-    return number
+    return number;
   }
 
   if (value.includes(";")) {
-    return value.split(";")
+    return value.split(";");
   }
 
-  return value
+  return value;
 }
 
-function buildObjectFromRow(row, header) {
+ function buildObjectFromRow(row, header) {
   return header.reduce((acc, field, i) => {
-    Reflect.set(acc, field.toString(), row[i])
+    Reflect.set(acc, field.toString(), row[i]);
 
-    return acc
-  }, {})
+    return acc;
+  }, {});
 }
 
-module.exports = {parseCsvRecords};
+let recordStore = [];
 
-let parsedData
+
+module.exports = {
+  parseCsvRecords,
+  recordStore
+};

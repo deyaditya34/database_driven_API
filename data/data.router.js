@@ -8,7 +8,7 @@ const insertData = require("./insert_data_api");
 const searchData = require("./search_data_api");
 
 
-router.post("/", upload.array("csvFile", 3), insertData);
+router.post("/", upload.single("csvFile", 1), insertData);
 router.get("/", searchData);
 
 

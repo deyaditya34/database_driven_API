@@ -10,3 +10,5 @@ async function searchData(data, collectionName = "database") {
 }
 
 module.exports = { createData, searchData };
+
+
