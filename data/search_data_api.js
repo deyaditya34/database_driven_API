@@ -5,18 +5,21 @@ async function controller(req, res) {
   const reqBodyKeys = Object.keys(req.body);
 
   let newReq = {};
+  let collectionName;
 
-  const parsedQueries = reqBodyKeys.map((key) => {
+  reqBodyKeys.forEach((key) => {
     if (key !== "collectionName") {
       return (newReq[key] = req.body[key]);
     }
   });
-  let result;
+
   if (req.body.collectionName) {
-     result = await searchData(newReq, req.body.collectionName);
+    collectionName = req.body.collectionName;
   } else {
-     result = await searchData(newReq)
+    collectionName = "n_a_h_p";
   }
+
+  let result = await searchData(newReq, collectionName);
 
   if (!result) {
     res.json({
@@ -29,6 +32,5 @@ async function controller(req, res) {
     });
   }
 }
-
 
 module.exports = buildApiHandler([controller]);

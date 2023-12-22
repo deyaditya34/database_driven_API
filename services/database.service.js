@@ -12,8 +12,6 @@ async function initialise() {
 }
 
 
-
-
 function getCollection(collectionName) {
   return database.collection(collectionName);
 }
