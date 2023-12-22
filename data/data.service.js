@@ -21,7 +21,7 @@ async function downloadData(searchCriteria, collectionName, cb1, cb2) {
   filesFound += result.length;
   console.log(`${filesFound} files found`);
 
-  if (result) {
+  if (result.length > 0) {
     await cb1(result);
     let lastItemInFind = result[result.length - 1];
     searchCriteria["ID"] = { $gt: lastItemInFind["ID"] };
@@ -29,7 +29,8 @@ async function downloadData(searchCriteria, collectionName, cb1, cb2) {
   } else {
     await cb2(result);
   }
-  return;
+
+  return result;
 }
 
 module.exports = { createData, searchData, downloadData };

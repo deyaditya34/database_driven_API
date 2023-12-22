@@ -1,58 +1,28 @@
 const buildApiHandler = require("../api-utils/build-api-handler");
-const fs = require("fs");
-const { downloadData } = require("./data.service");
-const { csvBuilder } = require("../middlewares/csv_builder");
+const getData = require("./data.service.updated")
 
-const outStream = fs.createWriteStream("outputFiles/outputFile.csv");
 
 async function controller(req, res) {
-  const reqBodyKeys = Object.keys(req.body);
+  let { filter, collectionName } = req.body;
 
-  let newReq = {};
-  let collectionName;
+  if (!collectionName) {
+    collectionName = "n_a_h";
+  }
 
-  reqBodyKeys.forEach((key) => {
-    if (key !== "collectionName") {
-      return (newReq[key] = req.body[key]);
+  if (!filter) {
+    filter = {
+      "name": "Walter",
+      "age": {
+        "$gt": 75
+      }
     }
-  });
-
-  if (req.body.collectionName) {
-    collectionName = req.body.collectionName;
-  } else {
-    collectionName = "n_a_h_p";
   }
 
+  res.setHeader("Content-disposition","attachment; filename=outputFile.csv")
+  res.setHeader("Content-type", "text/csv")
+  await getData(filter, collectionName, res);
 
-  while (true) {
-    result = await downloadData(newReq, collectionName, writeCsv, async(items) => {
-      outStream.close(() => {
-        console.log("File write stream closed!!!");
-      });
-
-      res.json({
-        success: true,
-        message: "Files written",
-      });
-    });
-  }
-}
-
-let headers = null;
-
-let totalFilesWritten = 0;
-
-async function writeCsv(items) {
-  if (!headers) {
-    headers = Object.keys(items[0]).join(",");
-    outStream.write(`${JSON.stringify(headers)}\n`);
-  }
-  items.forEach(async (item) => {
-    outStream.write(`${JSON.stringify(await csvBuilder(item))}\n`);
-  });
-
-  totalFilesWritten += items.length;
-  console.log(`${totalFilesWritten} files written in the output file`);
+  res.end();
 }
 
 module.exports = buildApiHandler([controller]);

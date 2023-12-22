@@ -11,6 +11,9 @@ const downloadData = require("./download_data_api")
 router.post("/", upload.single("csvFile", 1), insertData);
 router.get("/", searchData);
 router.get("/csv", downloadData);
+router.get("//", (req, res) => {
+  res.setHeader()
+})
 
 
 module.exports = router;
