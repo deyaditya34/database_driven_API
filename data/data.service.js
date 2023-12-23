@@ -1,36 +1,52 @@
 const db = require("../services/database.service");
+const csvService = require("../services/csv.service");
 
 async function createData(data = [], collectionName = "database") {
   return db.getCollection(collectionName).insertMany(data);
 }
 
-async function searchData(searchCriteria, collectionName) {
-  return db.getCollection(collectionName).find(searchCriteria).toArray();
-}
-
-let filesFound = 0;
-
-async function downloadData(searchCriteria, collectionName, cb1, cb2) {
-  let result = await db
+async function searchData(filter, pageNo, pageSize, collectionName) {
+  return db
     .getCollection(collectionName)
-    .find(searchCriteria)
-    .sort({ ID: 1 })
-    .limit(50000)
+    .find(filter)
+    .skip((pageNo - 1) * pageSize)
+    .limit(pageSize)
     .toArray();
-
-  filesFound += result.length;
-  console.log(`${filesFound} files found`);
-
-  if (result.length > 0) {
-    await cb1(result);
-    let lastItemInFind = result[result.length - 1];
-    searchCriteria["ID"] = { $gt: lastItemInFind["ID"] };
-    console.log(searchCriteria);
-  } else {
-    await cb2(result);
-  }
-
-  return result;
 }
 
-module.exports = { createData, searchData, downloadData };
+
+const DATA_FETCH_BATCH_SIZE = 10000;
+async function getData(filter, collectionName, outStream) {
+  let headersWritten = false;
+  let result = [];
+  let skip = 0;
+  do {
+    result = await db
+      .getCollection(collectionName)
+      .find(filter)
+      .skip(skip)
+      .limit(DATA_FETCH_BATCH_SIZE)
+      .toArray();
+
+    if (result.length === 0) {
+      return outStream.json({
+        success: true,
+        message: "did not find any items as per request"
+      })
+    }
+
+    if (!headersWritten) {
+      let header = Object.keys(result[0]);
+      csvService.writeCsvHeader(header, outStream);
+
+      headersWritten = true;
+    }
+
+    csvService.writeCsvItems(result, outStream);
+
+    skip += DATA_FETCH_BATCH_SIZE;
+  } while (result.length > 0);
+}
+
+
+module.exports = { createData, searchData, getData };
