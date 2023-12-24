@@ -4,6 +4,7 @@ const database = require("./services/database.service");
 const requestLogger = require("./middlewares/requestLogger");
 const notFoundHandler = require("./api-utils/not-found-handler");
 const dataRouter = require("./data/data.router");
+const queryRouter = require("./query/query.router");
 const errorHandler = require("./api-utils/error-handler");
 
 async function start() {
@@ -19,6 +20,7 @@ async function start() {
   server.use(requestLogger);
 
   server.use("/data", dataRouter);
+  server.use("/query", queryRouter);
 
   server.use(notFoundHandler);
   server.use(errorHandler);
@@ -33,7 +35,7 @@ start().catch((error) => {
 });
 
 
-// paginated and res.json
-// cursor based download data
+// paginated and res.json -- DONE
+// cursor based download data -- 
 // query saving api
 // 1 and 2 based on 3.

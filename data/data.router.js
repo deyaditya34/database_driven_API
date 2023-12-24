@@ -6,11 +6,13 @@ const upload = multer({dest: "uploads/"})
 const router = express.Router();
 const insertData = require("./insert.data.api");
 const searchData = require("./search.data.api");
-const downloadData = require("./fetch.data.api")
+const fetchData = require("./data.fetch.api")
+const queryData = require("./data.query.api")
 
 router.post("/", upload.single("csvFile", 1), insertData);
 router.get("/", searchData);
-router.get("/csv", downloadData);
+router.get("/csv", fetchData);
+router.get("/csvQuery", queryData)
 
 
 module.exports = router;

@@ -14,7 +14,6 @@ async function searchData(filter, pageNo, pageSize, collectionName) {
     .toArray();
 }
 
-
 const DATA_FETCH_BATCH_SIZE = 10000;
 async function getData(filter, collectionName, outStream) {
   let headersWritten = false;
@@ -29,10 +28,7 @@ async function getData(filter, collectionName, outStream) {
       .toArray();
 
     if (result.length === 0) {
-      return outStream.json({
-        success: true,
-        message: "did not find any items as per request"
-      })
+      return;
     }
 
     if (!headersWritten) {
@@ -48,5 +44,24 @@ async function getData(filter, collectionName, outStream) {
   } while (result.length > 0);
 }
 
+async function getDataByCursor(filter, collectionName, outStream) {
+  let parsedData = await db
+    .getCollection(collectionName)
+    .find(filter)
+    .limit(10);
 
-module.exports = { createData, searchData, getData };
+  let headersWritten = false;
+
+  parsedData.forEach(async (item) => {
+    if (!headersWritten) {
+      let header = Object.keys(item);
+      csvService.writeCsvHeader(header, outStream);
+
+      headersWritten = true;
+    }
+
+     csvService.writeCsvItemsForCursor(item, outStream);
+  });
+}
+
+module.exports = { createData, searchData, getData, getDataByCursor };
