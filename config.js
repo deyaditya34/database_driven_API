@@ -5,6 +5,7 @@ const DB_NAME = "database_driven_API";
 const COLLECTION_NAMES = {
   QUERY_SAVE: "querySavedColl",
   DATASET: "dataset",
+  DASHBOARD: "dashboard",
 };
 
 module.exports = {
