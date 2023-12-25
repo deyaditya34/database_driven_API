@@ -1,7 +1,7 @@
 const db = require("../services/database.service");
 const csvService = require("../services/csv.service");
 
-async function createData(data = [], collectionName = "database") {
+async function createData(data = [], collectionName) {
   return db.getCollection(collectionName).insertMany(data);
 }
 
@@ -60,8 +60,23 @@ async function getDataByCursor(filter, collectionName, outStream) {
       headersWritten = true;
     }
 
-     csvService.writeCsvItemsForCursor(item, outStream);
+    csvService.writeCsvItemsForCursor(item, outStream);
   });
 }
 
-module.exports = { createData, searchData, getData, getDataByCursor };
+async function getDataPaginated(filter, collectionName, pageNo, pageSize) {
+  return db
+    .getCollection(collectionName)
+    .find(filter)
+    .skip((pageNo - 1) * pageSize)
+    .limit(pageSize)
+    .toArray();
+}
+
+module.exports = {
+  createData,
+  searchData,
+  getData,
+  getDataByCursor,
+  getDataPaginated,
+};

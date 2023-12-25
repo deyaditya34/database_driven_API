@@ -1,8 +1,8 @@
 const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
-const { getData } = require("./data.service");
+const { getData } = require("../data/data.service");
 const { queryFind } = require("../query/query.service");
-const { searchDatasetByName, searchDatasetByID } = require("../dataset/dataset.service");
+const { searchDatasetByID } = require("./dataset.service");
 
 
 
