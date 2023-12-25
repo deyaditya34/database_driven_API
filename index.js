@@ -6,6 +6,8 @@ const notFoundHandler = require("./api-utils/not-found-handler");
 const dataRouter = require("./data/data.router");
 const queryRouter = require("./query/query.router");
 const errorHandler = require("./api-utils/error-handler");
+const datasetRouter = require("./dataset/dataset.router.api")
+
 
 async function start() {
   console.log("[INIT]: Connecting to database");
@@ -19,6 +21,7 @@ async function start() {
   
   server.use(requestLogger);
 
+  server.use("/dataset", datasetRouter);
   server.use("/data", dataRouter);
   server.use("/query", queryRouter);
 
