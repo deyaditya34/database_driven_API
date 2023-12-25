@@ -2,7 +2,7 @@ const buildApiHandler = require("../api-utils/build-api-handler");
 const { listDataset } = require("./dataset.service");
 
 async function controller(req, res) {
-  let result = await listDataset();
+  let result = await listDataset(req.query.datasetId);
 
   if (result) {
     res.json({

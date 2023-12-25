@@ -36,9 +36,3 @@ start().catch((error) => {
   console.log("[fatal]: could not start expense-tracker application");
   console.log(error);
 });
-
-
-// paginated and res.json -- DONE
-// cursor based download data -- 
-// query saving api
-// 1 and 2 based on 3.

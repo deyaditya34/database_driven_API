@@ -1,31 +1,52 @@
+const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
 const { getData } = require("./data.service");
+const { queryFind } = require("../query/query.service");
+const { searchDatasetByName, searchDatasetByID } = require("../dataset/dataset.service");
 
 
 
 async function controller(req, res) {
-  let { filter, collectionName } = req.body;
-
-
-  if (!collectionName) {
-    collectionName = "n_a_h_p";
-  }
-
-  if (!filter) {
-    filter = {
-      "name": "Walter",
-      "age": {
-        "$gt": 75
-      }
-    }
-  }
+ 
+  const dataFrame = await validateDataframeId(req);
+  const filter =  dataFrame.filters;
+  const datasetName = await findDatasetName(req);
+  
 
   res.setHeader("Content-disposition","attachment; filename=outputFile.csv")
   res.setHeader("Content-type", "text/csv")
-  await getData(filter, collectionName, res)
+  await getData(filter, datasetName, res)
   
   res.end();
  
 }
+
+async function validateDataframeId(req) {
+  const dataFrameId = req.query.dataFrameId;
+
+  if (!dataFrameId) {
+    throw new httpError.BadRequest("Field 'dataFramdId' is missing from req.query")
+  }
+
+  const existingDataframe = await queryFind(dataFrameId);
+
+  if (!existingDataframe) {
+    throw new httpError.BadRequest(`Field ${dataFrameId} is invalid.`)
+  }
+
+  return existingDataframe;
+}
+
+async function findDatasetName(req) {
+
+  const dataFrame = await validateDataframeId(req);
+
+  const dataset = await searchDatasetByID(dataFrame.datasetID)
+
+  return dataset.datasetName;
+}
+
+
+
 
 module.exports = buildApiHandler([controller]);

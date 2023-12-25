@@ -1,8 +1,7 @@
 const buildApiHandler = require("../api-utils/build-api-handler");
 const { createData } = require("../data/data.service");
 const { parseCsvRecords } = require("../middlewares/csv_parser");
-const { searchDataset } = require("./dataset.service");
-const {ObjectId} = require("mongodb")
+const { searchDatasetByID } = require("./dataset.service");
 
 async function controller(req, res) {
   
@@ -44,7 +43,7 @@ async function controller(req, res) {
 async function findDataset(req) {
   const datasetId = req.query.id;
   
-  let existingDatasetId = await searchDataset({_id: new ObjectId(datasetId)});
+  let existingDatasetId = await searchDatasetByID(datasetId);
   
   return existingDatasetId.datasetName;
 

@@ -5,7 +5,7 @@ const { searchDatasetByName } = require("./dataset.service");
 async function controller(req, res) {
   const { datasetName } = req.body;
 
-  let result = await searchDataset({ datasetName });
+  let result = await searchDatasetByName({ datasetName });
 
   if (result) {
     res.json({

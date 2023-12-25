@@ -3,29 +3,24 @@ const { querySave } = require("./query.service");
 
 async function controller(req, res) {
   let parsedQueriesArr = queryProcess(req);
-
-  let result = await querySave(parsedQueriesArr)
+  
+  let dataframe = await querySave(parsedQueriesArr)
 
   res.json({
     message: "queries saved",
-    data: result.insertedCount,
+    data: dataframe,
   });
 }
 
 function queryProcess(req) {
   const queryName = Object.keys(req.body);
   const queryValue = Object.values(req.body);
+  
+  let result = {};
 
-  let result = [];
-
-  queryName.forEach((name, i) => {
-    let item = {};
-    
-    Reflect.set(item, "queryName", name);
-    Reflect.set(item, "queryValue", queryValue[i]);
-
-    result.push(item);
-  });
+  result[queryName[0]] = queryValue[0];
+  result[queryName[1]] = queryValue[1];
+  result[queryName[2]] = queryValue[2];
 
   return result;
 }
