@@ -2,12 +2,12 @@ const express = require("express");
 
 const router = express.Router();
 
-const saveDataframe = require("./query.save.api");
-const listDataframe = require("./query.list.api");
-const findDataframe = require("./query.find.api")
+const insertDataframe = require("./dataframe.save.api");
+const listDataframe = require("./dataframe.list.api");
+const findDataframe = require("./dataframe.find.api")
 
 
-router.post("/", saveDataframe);
+router.post("/", insertDataframe);
 router.get("/", findDataframe);
 router.get("/list", listDataframe);
 

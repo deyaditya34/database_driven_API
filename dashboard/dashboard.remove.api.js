@@ -1,7 +1,7 @@
 const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
-const { queryFind } = require("../query/query.service");
 const { removeDataframeFromDashboard, findDashboardById } = require("./dashboard.service");
+const { findDataframe } = require("../dataframe/dataframe.service");
 
 async function controller(req, res) {
 const {dashboardId, dataframeId} = req.body;
@@ -31,7 +31,7 @@ async function validateDataframeId(req, res, next) {
     throw new httpError.BadRequest(`Field 'dataframeId' is missing from req.body.`)
   }
 
-  const EXISTING_DATAFRAME_ID = await queryFind(dataframeId);
+  const EXISTING_DATAFRAME_ID = await findDataframe(dataframeId);
 
   if (!EXISTING_DATAFRAME_ID) {
     throw new httpError.BadRequest(`Field 'dataframeId -' '${dataframeId}' is invalid.`)

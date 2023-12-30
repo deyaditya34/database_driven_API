@@ -6,8 +6,7 @@ const requestLogger = require("./middlewares/requestLogger");
 const notFoundHandler = require("./api-utils/not-found-handler");
 const errorHandler = require("./api-utils/error-handler");
 
-const dataRouter = require("./data/data.router");
-const queryRouter = require("./query/query.router");
+const dataframeRouter = require("./dataframe/dataframe.router");
 const datasetRouter = require("./dataset/dataset.router.api");
 const dashboardRouter = require("./dashboard/dashboard.router.api");
 
@@ -24,8 +23,7 @@ async function start() {
   server.use(requestLogger);
 
   server.use("/dataset", datasetRouter);
-  server.use("/data", dataRouter);
-  server.use("/query", queryRouter);
+  server.use("/dataframe", dataframeRouter);
   server.use("/dashboard", dashboardRouter);
 
   server.use(notFoundHandler);

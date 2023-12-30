@@ -1,12 +1,11 @@
 const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
-const { queryFind } = require("../query/query.service");
 const {
   insertDataFrameInDashboard,
   findDashboardById,
   dashboardDataframeLengthChecker,
-  dashboardList,
 } = require("./dashboard.service");
+const { findDataframe } = require("../dataframe/dataframe.service");
 
 async function controller(req, res) {
   const dataframeIDs = req.body.dataFrameID;
@@ -68,7 +67,7 @@ async function validateDataFrameIDs(dataframeIDs) {
   }
 
   dataframeIDs.forEach(async (id) => {
-    const EXISTING_DATAFRAME_ID = await queryFind(id);
+    const EXISTING_DATAFRAME_ID = await findDataframe(id);
 
     if (!EXISTING_DATAFRAME_ID) {
       throw new httpError.BadRequest(`dataFrame id - '${id} is invalid'`);

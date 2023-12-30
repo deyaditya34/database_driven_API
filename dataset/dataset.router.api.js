@@ -5,8 +5,8 @@ const createDataset = require("./dataset.create.api");
 const searchDataset = require("./dataset.search.api");
 const listDataset = require("./dataset.list.api");
 const insertDataset = require("./dataset.insert.api.js");
-const fetchDatasetStream = require("./dataset.fetchStream.api.js");
-const fetchDatasetJSON = require("./dataset.fetchJSON.api.js");
+const fetchDatasetStream = require("./dataset.fetchJSON.api.js");
+const fetchDatasetJSON = require("./dataset.fetchStream.api.js");
 
 const upload = multer({ dest: "uploads/" });
 
