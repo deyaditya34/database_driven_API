@@ -1,13 +1,13 @@
 const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
 const { searchDatasetByID } = require("../dataset/dataset.service");
-const { queryList } = require("./query.service");
+const { listDataframe } = require("./dataframe.service");
 
 async function controller(req, res) {
   const datasetID = await validateDatasetId(req);
   const datasetIDStringify = datasetID.toString()
 
-  const queries = await queryList(datasetIDStringify);
+  const queries = await listDataframe(datasetIDStringify);
 
   if (queries.length === 0) {
     res.json({

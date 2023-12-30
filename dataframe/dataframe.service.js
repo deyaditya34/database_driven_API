@@ -2,21 +2,21 @@ const db = require("../services/database.service");
 const config = require("../config");
 const { ObjectId } = require("mongodb");
 
-async function querySave(query) {
+async function insertDataframe(query) {
   return db.getCollection(config.COLLECTION_NAMES.QUERY_SAVE).insertOne(query);
 }
 
-async function queryFind(dataFrameId) {
+async function findDataframe(dataFrameId) {
   return db
     .getCollection(config.COLLECTION_NAMES.QUERY_SAVE)
     .findOne({ _id: new ObjectId(dataFrameId) });
 }
 
-async function queryList(datasetId) {
+async function listDataframe(datasetId) {
   return db
     .getCollection(config.COLLECTION_NAMES.QUERY_SAVE)
     .find({ datasetID: datasetId })
     .toArray();
 }
 
-module.exports = { querySave, queryFind, queryList };
+module.exports = { insertDataframe, findDataframe, listDataframe };

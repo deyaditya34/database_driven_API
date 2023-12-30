@@ -1,15 +1,15 @@
 const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
-const { querySave } = require("./query.service");
 const { searchDatasetByID } = require("../dataset/dataset.service");
+const { insertDataframe } = require("./dataframe.service");
 
 async function controller(req, res) {
   let parsedQueriesArr = queryProcess(req);
 
-  let dataframe = await querySave(parsedQueriesArr);
+  let dataframe = await insertDataframe(parsedQueriesArr);
 
   res.json({
-    message: "queries saved",
+    message: "dataframe Saved",
     data: dataframe,
   });
 }

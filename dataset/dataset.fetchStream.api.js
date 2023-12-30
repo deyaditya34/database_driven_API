@@ -1,8 +1,8 @@
 const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
-const { getData, getDataPaginated } = require("../data/data.service");
-const { queryFind } = require("../query/query.service");
+const { getDataPaginated } = require("../data/data.service");
 const { searchDatasetByID } = require("./dataset.service");
+const { findDataframe } = require("../dataframe/dataframe.service");
 
 async function controller(req, res) {
   const dataFrame = await validateDataframeId(req);
@@ -33,7 +33,7 @@ async function validateDataframeId(req) {
     );
   }
 
-  const existingDataframe = await queryFind(dataFrameId);
+  const existingDataframe = await findDataframe(dataFrameId);
 
   if (!existingDataframe) {
     throw new httpError.BadRequest(`Field ${dataFrameId} is invalid.`);

@@ -1,8 +1,8 @@
 const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
 const { getData } = require("../data/data.service");
-const { queryFind } = require("../query/query.service");
 const { searchDatasetByID } = require("./dataset.service");
+const { findDataframe } = require("../dataframe/dataframe.service");
 
 
 
@@ -28,7 +28,7 @@ async function validateDataframeId(req) {
     throw new httpError.BadRequest("Field 'dataFramdId' is missing from req.query")
   }
 
-  const existingDataframe = await queryFind(dataFrameId);
+  const existingDataframe = await findDataframe(dataFrameId);
 
   if (!existingDataframe) {
     throw new httpError.BadRequest(`Field ${dataFrameId} is invalid.`)

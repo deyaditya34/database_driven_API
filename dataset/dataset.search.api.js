@@ -1,4 +1,3 @@
-const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
 const { searchDatasetByName } = require("./dataset.service");
 
