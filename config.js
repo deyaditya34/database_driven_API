@@ -3,7 +3,7 @@ const MONGO_DB_URI = "mongodb://127.0.0.1:27017";
 const DB_NAME = "database_driven_API";
 
 const COLLECTION_NAMES = {
-  QUERY_SAVE: "querySavedColl",
+  DATAFRAME: "dataframe",
   DATASET: "dataset",
   DASHBOARD: "dashboard",
 };
