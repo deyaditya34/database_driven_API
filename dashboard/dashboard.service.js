@@ -5,7 +5,7 @@ const { ObjectId } = require("mongodb");
 async function createDashboard(dashboardName) {
   return db
     .getCollection(config.COLLECTION_NAMES.DASHBOARD)
-    .insertOne({ dashboardName });
+    .insertOne({ dashboardName});
 }
 
 async function insertDataFrameInDashboard(dashboardId, dataframeId = []) {
@@ -13,7 +13,7 @@ async function insertDataFrameInDashboard(dashboardId, dataframeId = []) {
     .getCollection(config.COLLECTION_NAMES.DASHBOARD)
     .updateOne(
       { _id: new ObjectId(dashboardId) },
-      { $set: dataframeId }
+      { $push: { dataframeId: { $each: dataframeId } } }
     );
 }
 
@@ -42,10 +42,12 @@ async function dashboardDataframeLengthChecker(dashboardId) {
 }
 
 async function removeDataframeFromDashboard(dashboardId, dataframeId) {
-  return db.getCollection(config.COLLECTION_NAMES.DASHBOARD).updateOne(
-    {_id: new ObjectId(dashboardId)},
-    {$pull : {dataframeId : dataframeId}}
-  )
+  return db
+    .getCollection(config.COLLECTION_NAMES.DASHBOARD)
+    .updateOne(
+      { _id: new ObjectId(dashboardId) },
+      { $pull: { dataframeId: dataframeId } }
+    );
 }
 
 module.exports = {
@@ -55,5 +57,5 @@ module.exports = {
   dashboardList,
   insertDataFrameInDashboard,
   dashboardDataframeLengthChecker,
-  removeDataframeFromDashboard
+  removeDataframeFromDashboard,
 };
