@@ -1,39 +1,52 @@
 const db = require("../services/database.service");
 const config = require("../config");
 const { ObjectId } = require("mongodb");
-const csvService = require("../services/csv.service")
+const csvService = require("../services/csv.service");
 
-async function createDataset(datasetName) {
+async function createDataset(datasetName, username) {
   return db
     .getCollection(config.COLLECTION_NAMES.DATASET)
-    .insertOne(datasetName);
+    .insertOne({ datasetName: datasetName, username: username });
 }
 
-async function insertData(data = [], datasetName) {
-  return db.getCollection(datasetName).insertMany(data);
+async function insertData(data = [], datasetName, username) {
+  let usernameInsertinData = data.map((item) =>
+    item.push({ username: username })
+  );
+  return db.getCollection(datasetName).insertMany(usernameInsertinData);
 }
 
-async function searchDatasetByName(datasetName) {
-  return db.getCollection(config.COLLECTION_NAMES.DATASET).findOne(datasetName);
+async function searchDatasetByName(datasetName, username) {
+  return db
+    .getCollection(config.COLLECTION_NAMES.DATASET)
+    .findOne(
+      { datasetName: datasetName, username: username },
+      { projection: { username: false } }
+    );
 }
 
-async function searchDatasetByID(datasetId, username) {
-  return db.getCollection(config.COLLECTION_NAMES.DATASET).findOne({_id: new ObjectId(datasetId), username: username})
+async function searchDatasetById(datasetId, username) {
+  return db
+    .getCollection(config.COLLECTION_NAMES.DATASET)
+    .findOne({ _id: new ObjectId(datasetId), username: username });
 }
 
-async function listDataset() {
-  return db.getCollection(config.COLLECTION_NAMES.DATASET).find().toArray();
+async function listDataset(username) {
+  return db
+    .getCollection(config.COLLECTION_NAMES.DATASET)
+    .find({ username: username }, { projection: { username: false } })
+    .toArray();
 }
 
 const DATA_FETCH_BATCH_SIZE = 10000;
-async function getData(filter, collectionName, outStream) {
+async function getData(filter, collectionName, username, outStream) {
   let headersWritten = false;
   let result = [];
   let skip = 0;
   do {
     result = await db
       .getCollection(collectionName)
-      .find(filter)
+      .find(filter, { username: username })
       .skip(skip)
       .limit(DATA_FETCH_BATCH_SIZE)
       .toArray();
@@ -55,19 +68,25 @@ async function getData(filter, collectionName, outStream) {
   } while (result.length > 0);
 }
 
-async function getDataPaginated(filter, datasetName, pageNo, pageSize) {
+async function getDataPaginated(
+  filter,
+  datasetName,
+  pageNo,
+  pageSize,
+  username
+) {
   return db
     .getCollection(datasetName)
-    .find(filter)
+    .find(filter, { username: username })
     .skip((pageNo - 1) * pageSize)
     .limit(pageSize)
     .toArray();
 }
 
-async function getDataByCursor(filter, collectionName, outStream) {
+async function getDataByCursor(filter, collectionName, username, outStream) {
   let parsedData = await db
     .getCollection(collectionName)
-    .find(filter)
+    .find(filter, { username: username })
     .limit(10);
 
   let headersWritten = false;
@@ -87,10 +106,9 @@ async function getDataByCursor(filter, collectionName, outStream) {
 module.exports = {
   createDataset,
   searchDatasetByName,
-  searchDatasetByID,
+  searchDatasetById,
   listDataset,
   insertData,
   getData,
-  getDataPaginated
+  getDataPaginated,
 };
-

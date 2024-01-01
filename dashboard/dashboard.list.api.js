@@ -3,8 +3,9 @@ const userResolver = require("../middlewares/user.Resolver");
 const { dashboardList } = require("./dashboard.service");
 
 async function controller(req, res) {
+  const {user} = req.body;
 
-  let result = await dashboardList();
+  let result = await dashboardList(user.username);
 
   if (result.length !== 0) {
     res.json({

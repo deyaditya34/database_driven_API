@@ -1,44 +1,55 @@
 const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
-const { removeDataframeFromDashboard, findDashboardById } = require("./dashboard.service");
-const { findDataframe } = require("../dataframe/dataframe.service");
+const {
+  removeDataframeFromDashboard,
+  findDashboardById,
+} = require("./dashboard.service");
+const { findDataframeById } = require("../dataframe/dataframe.service");
 const userResolver = require("../middlewares/user.Resolver");
+const paramValidator = require("../middlewares/params.validator");
 
 async function controller(req, res) {
-const {dashboardId, dataframeId} = req.body;
+  const { dashboardId, dataframeId } = req.query;
+  const {user} = req.body;
 
-let result = await removeDataframeFromDashboard(dashboardId, dataframeId);
+  let result = await removeDataframeFromDashboard(dashboardId, dataframeId, user.username);
 
-res.json({
-  data: result
-})
+  res.json({
+    data: result,
+  });
 }
 
 async function validateDataframeId(req, res, next) {
-  const dashboardId = req.body.dashboardId;
-  const dataframeId = req.body.dataframeId;
+  const {dashboardId, dataframeId} = req.query;
+  const {user} = req.body;
 
-  if (!dashboardId) {
-    throw new httpError.BadRequest(`Field 'dashboardId' is missing from req.body.`)
-  }
-
-  const EXISTING_DASHBOARD_ID = await findDashboardById(dashboardId);
+  const EXISTING_DASHBOARD_ID = await findDashboardById(dashboardId, user.username);
 
   if (!EXISTING_DASHBOARD_ID) {
-    throw new httpError.BadRequest(`Field 'dashboardId -' '${dashboardId}' is invalid.`)
+    throw new httpError.BadRequest(
+      `Field 'dashboardId -' '${dashboardId}' is invalid.`
+    );
   }
 
-  if (!dataframeId) {
-    throw new httpError.BadRequest(`Field 'dataframeId' is missing from req.body.`)
-  }
-
-  const EXISTING_DATAFRAME_ID = await findDataframe(dataframeId);
+  const EXISTING_DATAFRAME_ID = await findDataframeById(dataframeId, user.username);
 
   if (!EXISTING_DATAFRAME_ID) {
-    throw new httpError.BadRequest(`Field 'dataframeId -' '${dataframeId}' is invalid.`)
+    throw new httpError.BadRequest(
+      `Field 'dataframeId -' '${dataframeId}' is invalid.`
+    );
   }
 
   next();
 }
 
-module.exports = buildApiHandler([userResolver,validateDataframeId, controller])
+const missingParamsValidator = paramValidator.createParamValidator(
+  ["dashboardId", "dataFrameId"],
+  paramValidator.PARAM_KEY.QUERY
+);
+
+module.exports = buildApiHandler([
+  userResolver,
+  missingParamsValidator,
+  validateDataframeId,
+  controller,
+]);

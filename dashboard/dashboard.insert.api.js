@@ -5,8 +5,9 @@ const {
   findDashboardById,
   dashboardDataframeLengthChecker,
 } = require("./dashboard.service");
-const { findDataframe } = require("../dataframe/dataframe.service");
+const { findDataframeById } = require("../dataframe/dataframe.service");
 const userResolver = require("../middlewares/user.Resolver");
+const paramValidator = require("../middlewares/params.validator");
 
 async function controller(req, res) {
   const dataframeIDs = req.body.dataFrameID;
@@ -21,54 +22,41 @@ async function controller(req, res) {
 }
 
 async function validateParams(req, res, next) {
-  const dashboardID = req.body.dashboardID;
-  const dataframeIDs = req.body.dataFrameID;
+ const {dashboardId, dataframeId, user} = req.body;
 
-  
-  await validateDashboardID(dashboardID);
-  
-  await validateDataFrameIDs(dataframeIDs);
-  
-  await validateDashboardDataframeLength(dashboardID, dataframeIDs);
-  
-  await duplicateDataframeReq(dashboardID, dataframeIDs);
+  await validateDashboardId(dashboardId, user.username);
+
+  await validateDataFrameIDs(dataframeId, user.username);
+
+  await validateDashboardDataframeLength(dashboardId, dataframeId, user.username);
+
+  await duplicateDataframeReq(dashboardId, dataframeId, user.username);
   next();
 }
 
-async function validateDashboardID(dashboardID) {
-  if (!dashboardID) {
-    throw new httpError.BadRequest(
-      `Field 'dashboardID' - '${dashboardID}' is missing from req.body`
-    );
-  }
+async function validateDashboardId(dashboardId, username) {
 
-  const EXISTING_DASHBOARD_ID = await findDashboardById(dashboardID);
+  const EXISTING_DASHBOARD_ID = await findDashboardById(dashboardId, username);
 
   if (!EXISTING_DASHBOARD_ID) {
     throw new httpError.BadRequest(
-      `Field 'dashboardID -' '${dashboardID}' is invalid.`
+      `Field 'dashboardID -' '${dashboardId}' is invalid.`
     );
   }
 }
 
-
 // There is a problem in the function 'validateDataFrameIDs'. When this function throws an error the program automatically closes. Need help to sort this out.
 
-async function validateDataFrameIDs(dataframeIDs) {
-  if (!dataframeIDs) {
+async function validateDataFrameIDs(dataframeId, username) {
+
+  if (!(dataframeId.length > 0)) {
     throw new httpError.BadRequest(
-      `Field 'dataFrameID' is missing from req.body`
+      `Field 'dataFrameID - ' '${dataframeId} should be an array'`
     );
   }
 
-  if (!(dataframeIDs.length > 0)) {
-    throw new httpError.BadRequest(
-      `Field 'dataFrameID - ' '${dataframeIDs} should be an array'`
-    );
-  }
-
-  dataframeIDs.forEach(async (id) => {
-    const EXISTING_DATAFRAME_ID = await findDataframe(id);
+  dataframeId.forEach(async (id) => {
+    const EXISTING_DATAFRAME_ID = await findDataframeById(id, username);
 
     if (!EXISTING_DATAFRAME_ID) {
       throw new httpError.BadRequest(`dataFrame id - '${id} is invalid'`);
@@ -76,13 +64,13 @@ async function validateDataFrameIDs(dataframeIDs) {
   });
 }
 
-async function validateDashboardDataframeLength(dashboardID, dataframeIDs) {
+async function validateDashboardDataframeLength(dashboardId, dataframeId, username) {
   const EXISTING_DATAFRAMES_IN_DASHBOARD =
-    await dashboardDataframeLengthChecker(dashboardID);
+    await dashboardDataframeLengthChecker(dashboardId, username);
 
   const TOTAL_DATAFRAMES_IN_DASHBOARD = 10;
 
-  const reqDataframeIdLength = dataframeIDs.length;
+  const reqDataframeIdLength = dataframeId.length;
 
   if (EXISTING_DATAFRAMES_IN_DASHBOARD) {
     if (
@@ -90,27 +78,36 @@ async function validateDashboardDataframeLength(dashboardID, dataframeIDs) {
       TOTAL_DATAFRAMES_IN_DASHBOARD
     ) {
       throw new httpError.BadRequest(
-        `dataframes in the 'dashboard id' - '${dashboardID}' is full.`
+        `dataframes in the 'dashboard id' - '${dashboardId}' is full.`
       );
     }
   }
 }
 
-async function duplicateDataframeReq(dashboardID, dataframeIDs) {
-  const existingDashboard = await findDashboardById(dashboardID);
+async function duplicateDataframeReq(dashboardId, dataframeId, username) {
+  const existingDashboard = await findDashboardById(dashboardId, username);
 
   const existingDataframes = existingDashboard.dataframeId;
 
   existingDataframes.forEach((dashDf) => {
-    dataframeIDs.forEach((reqDf) => {
+    dataframeId.forEach((reqDf) => {
       if (dashDf === reqDf) {
         throw new httpError.BadRequest(
-          `Field 'dataFrameID' - ${dashDf} is already inserted.`
+          `Field 'dataFrameId' - ${dashDf} is already inserted.`
         );
       }
     });
   });
 }
 
-module.exports = buildApiHandler([userResolver,validateParams, controller]);
+const missingParamsValidator = paramValidator.createParamValidator(
+  ["dashboardId", "dataFrameId"],
+  paramValidator.PARAM_KEY.BODY
+);
 
+module.exports = buildApiHandler([
+  userResolver,
+  missingParamsValidator,
+  validateParams,
+  controller,
+]);

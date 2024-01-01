@@ -3,15 +3,16 @@ const userResolver = require("../middlewares/user.Resolver");
 const { searchDatasetByName } = require("./dataset.service");
 
 async function controller(req, res) {
-  const { datasetName } = req.body;
+  const { user } = req.body;
+  const {datasetName} = req.query;
 
-  let result = await searchDatasetByName({ datasetName });
+  let result = await searchDatasetByName(datasetName, user.username);
 
   if (result) {
     res.json({
       message: "dataset name found",
       data: {
-        id: result._id,
+        id: result,
       },
     });
   } else {
@@ -21,4 +22,4 @@ async function controller(req, res) {
   }
 }
 
-module.exports = buildApiHandler([userResolver,controller]);
+module.exports = buildApiHandler([userResolver, controller]);

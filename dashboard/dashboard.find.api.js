@@ -2,11 +2,13 @@ const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
 const { findDashboardById } = require("./dashboard.service");
 const userResolver = require("../middlewares/user.Resolver");
+const paramValidator = require("../middlewares/params.validator");
 
 async function controller(req, res) {
-  const { id } = req.query;
+  const { user } = req.body;
+  const {dashboardId} = req.query;
 
-  const result = await findDashboardById(id);
+  const result = await findDashboardById(dashboardId, user.username);
 
   if (result) {
     res.json({
@@ -15,9 +17,14 @@ async function controller(req, res) {
     });
   } else {
     res.json({
-      message: "not dashboard found for the id"
-    })
+      message: "not dashboard found for the id",
+    });
   }
 }
 
-module.exports = buildApiHandler([userResolver,controller]);
+const missingParamsValidator = paramValidator.createParamValidator(
+  ["dashboardId"],
+  paramValidator.PARAM_KEY.QUERY
+);
+
+module.exports = buildApiHandler([userResolver,missingParamsValidator, controller]);

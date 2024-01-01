@@ -1,20 +1,27 @@
 const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
-const { findDataframe } = require("../dataframe/dataframe.service");
-const { searchDatasetByID, getDataPaginated } = require("./dataset.service");
+const { findDataframeById } = require("../dataframe/dataframe.service");
+const { getDataPaginated, searchDatasetById } = require("./dataset.service");
 const userResolver = require("../middlewares/user.Resolver");
+const paramsValidator = require("../middlewares/params.validator");
+
 
 async function controller(req, res) {
-  const {user} = req.body;
-  const dataFrame = await validateDataframeId(req);
+  const { dataframeId, pageNo, pageSize } = req.query;
+  const { user } = req.body;
+  const dataframe = await validateDataframeId(dataframeId, user.username);
 
-  const filter = dataFrame.filters;
+  const filter = dataframe.filters;
 
-  const datasetName = await findDatasetName(req);
+  const datasetName = await findDatasetName(dataframe.datasetId, user.username);
 
-  const { pageNo, pageSize } = validatePagination(req);
-
-  let result = await getDataPaginated(filter, datasetName, pageNo, pageSize);
+  let result = await getDataPaginated(
+    filter,
+    datasetName,
+    pageNo,
+    pageSize,
+    user.username
+  );
 
   if (result.length === 0) {
     res.json({
@@ -28,67 +35,55 @@ async function controller(req, res) {
   }
 }
 
-async function validateDataframeId(req) {
-  const dataFrameId = req.query.dataFrameId;
-
-  if (!dataFrameId) {
+async function validateDataframeId(dataframeId, username) {
+  if (!dataframeId) {
     throw new httpError.BadRequest(
       "Field 'dataFramdId' is missing from req.query"
     );
   }
 
-  const existingDataframe = await findDataframe(dataFrameId);
+  const existingDataframe = await findDataframeById(dataframeId, username);
 
   if (!existingDataframe) {
-    throw new httpError.BadRequest(`Field ${dataFrameId} is invalid.`);
+    throw new httpError.BadRequest(`Field ${dataframeId} is invalid.`);
   }
 
   return existingDataframe;
 }
 
-async function findDatasetName(req) {
-  const dataFrame = await validateDataframeId(req);
-
-  const dataset = await searchDatasetByID(dataFrame.datasetID);
+async function findDatasetName(datasetId, username) {
+  const dataset = await searchDatasetById(datasetId, username);
 
   return dataset.datasetName;
 }
 
-function validatePagination(req) {
+function validatePagination(req, res, next) {
   const { pageNo, pageSize } = req.query;
-
-  if (!pageNo) {
-    throw new httpError.BadRequest(`Field 'pageNo' is missing from req.query`);
-  }
-
-  if (!pageSize) {
-    throw new httpError.BadRequest(
-      `Field 'pageSize' is missing from req.query`
-    );
-  }
   const PARSE_INT_PAGENO = parseInt(pageNo);
   const PARSE_INT_PAGESIZE = parseInt(pageSize);
 
-  if (pageNo) {
-    if (Number.isNaN(PARSE_INT_PAGENO)) {
-      throw new httpError.BadRequest(
-        `Field 'pageNo' ${pageNo} should be a number`
-      );
-    }
+  if (Number.isNaN(PARSE_INT_PAGENO)) {
+    throw new httpError.BadRequest(
+      `Field 'pageNo' ${pageNo} should be a number`
+    );
   }
 
-  if (pageSize) {
-    if (Number.isNaN(PARSE_INT_PAGESIZE)) {
-      throw new httpError.BadRequest(
-        `Field 'pageSize' ${pageSize} should be a number`
-      );
-    }
+  if (Number.isNaN(PARSE_INT_PAGESIZE)) {
+    throw new httpError.BadRequest(
+      `Field 'pageSize' ${pageSize} should be a number`
+    );
   }
 
-  return {
-    pageNo: PARSE_INT_PAGENO,
-    pageSize: PARSE_INT_PAGESIZE,
-  };
+  Reflect.set(req.query, "pageNo", PARSE_INT_PAGENO);
+  Reflect.set(req.query, "pageSize", PARSE_INT_PAGESIZE);
+  next();
 }
 
-module.exports = buildApiHandler([userResolver,controller]);
+const missingParamsValidator = paramsValidator.createParamValidator(["dataframeId", "pageNo", "pageSize"], paramsValidator.PARAM_KEY.QUERY);
+
+module.exports = buildApiHandler([
+  userResolver,
+  missingParamsValidator,
+  validatePagination,
+  controller,
+]);

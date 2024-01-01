@@ -3,7 +3,8 @@ const userResolver = require("../middlewares/user.Resolver");
 const { listDataset } = require("./dataset.service");
 
 async function controller(req, res) {
-  let result = await listDataset(req.query.datasetId);
+  const {user} = req.body;
+  let result = await listDataset(user.username);
 
   if (result) {
     res.json({

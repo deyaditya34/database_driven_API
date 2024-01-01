@@ -2,10 +2,10 @@ const db = require("../services/database.service");
 const config = require("../config");
 const { ObjectId } = require("mongodb");
 
-async function createDashboard(dashboardName) {
+async function createDashboard(dashboardName, username) {
   return db
     .getCollection(config.COLLECTION_NAMES.DASHBOARD)
-    .insertOne({ dashboardName});
+    .insertOne({ dashboardName: dashboardName, username: username });
 }
 
 async function insertDataFrameInDashboard(dashboardId, dataframeId = []) {
@@ -17,35 +17,45 @@ async function insertDataFrameInDashboard(dashboardId, dataframeId = []) {
     );
 }
 
-async function findDashboardByName(dashboardName) {
+async function findDashboardByName(dashboardName, username) {
   return db
     .getCollection(config.COLLECTION_NAMES.DASHBOARD)
-    .findOne({ dashboardName: dashboardName });
+    .findOne({ dashboardName: dashboardName, username: username });
 }
 
-async function findDashboardById(dashboardId) {
+async function findDashboardById(dashboardId, username) {
   return db
     .getCollection(config.COLLECTION_NAMES.DASHBOARD)
-    .findOne({ _id: new ObjectId(dashboardId) });
+    .findOne({ _id: new ObjectId(dashboardId), username: username });
 }
 
-async function dashboardList() {
-  return db.getCollection(config.COLLECTION_NAMES.DASHBOARD).find().toArray();
+async function dashboardList(username) {
+  return db
+    .getCollection(config.COLLECTION_NAMES.DASHBOARD)
+    .find({ username })
+    .toArray();
 }
 
-async function dashboardDataframeLengthChecker(dashboardId) {
-  let dashboard = await findDashboardById(dashboardId);
+async function dashboardDataframeLengthChecker(dashboardId, username) {
+  let dashboard = await findDashboardById({
+    dashboardId: dashboardId,
+    username: username,
+  });
 
   let dataFramesInDashboard = dashboard.dataframeId;
 
   return dataFramesInDashboard;
 }
 
-async function removeDataframeFromDashboard(dashboardId, dataframeId) {
+async function removeDataframeFromDashboard(
+  dashboardId,
+  dataframeId,
+  username
+) {
   return db
     .getCollection(config.COLLECTION_NAMES.DASHBOARD)
     .updateOne(
-      { _id: new ObjectId(dashboardId) },
+      { _id: new ObjectId(dashboardId), username: username },
       { $pull: { dataframeId: dataframeId } }
     );
 }
