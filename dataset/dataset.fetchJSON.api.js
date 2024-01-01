@@ -2,6 +2,7 @@ const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
 const { findDataframe } = require("../dataframe/dataframe.service");
 const { searchDatasetByID, getDataPaginated } = require("./dataset.service");
+const userResolver = require("../middlewares/user.Resolver");
 
 async function controller(req, res) {
   const dataFrame = await validateDataframeId(req);
@@ -89,4 +90,4 @@ function validatePagination(req) {
   };
 }
 
-module.exports = buildApiHandler([controller]);
+module.exports = buildApiHandler([userResolver,controller]);

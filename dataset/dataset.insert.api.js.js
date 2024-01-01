@@ -1,5 +1,6 @@
 const buildApiHandler = require("../api-utils/build-api-handler");
 const { parseCsvRecords } = require("../middlewares/csv_parser");
+const userResolver = require("../middlewares/user.Resolver");
 const { searchDatasetByID, insertData } = require("./dataset.service");
 
 async function controller(req, res) {
@@ -45,4 +46,4 @@ async function findDataset(req) {
   return existingDatasetId.datasetName;
 }
 
-module.exports = buildApiHandler([controller]);
+module.exports = buildApiHandler([userResolver,controller]);

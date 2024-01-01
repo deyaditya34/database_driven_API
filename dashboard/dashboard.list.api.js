@@ -1,4 +1,5 @@
 const buildApiHandler = require("../api-utils/build-api-handler");
+const userResolver = require("../middlewares/user.Resolver");
 const { dashboardList } = require("./dashboard.service");
 
 async function controller(req, res) {
@@ -18,4 +19,4 @@ async function controller(req, res) {
 }
 
 
-module.exports = buildApiHandler([controller])
+module.exports = buildApiHandler([userResolver,controller])

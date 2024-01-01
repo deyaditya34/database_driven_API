@@ -1,6 +1,8 @@
 const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
 const { createDataset, searchDatasetByName} = require("./dataset.service");
+const userResolver = require("../middlewares/user.Resolver");
+const checkAdminRights = require("../middlewares/check.admin.rights");
 
 async function controller(req, res) {
   const { datasetName } = req.body;
@@ -37,4 +39,4 @@ async function validateParams(req, res, next) {
   next();
 }
 
-module.exports = buildApiHandler([validateParams, controller]);
+module.exports = buildApiHandler([userResolver,validateParams, controller]);

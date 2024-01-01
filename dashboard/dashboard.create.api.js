@@ -1,6 +1,7 @@
 const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
-const {createDashboard, findDashboardByName} = require("./dashboard.service")
+const {createDashboard, findDashboardByName} = require("./dashboard.service");
+const userResolver = require("../middlewares/user.Resolver");
 
 async function controller(req, res) {
 
@@ -33,4 +34,4 @@ async function validateParams(req, res, next) {
  next()
 }
 
-module.exports = buildApiHandler([validateParams, controller]);
+module.exports = buildApiHandler([userResolver,validateParams, controller]);

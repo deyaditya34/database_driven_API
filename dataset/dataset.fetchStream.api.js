@@ -2,6 +2,7 @@ const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
 const { searchDatasetByID, getData } = require("./dataset.service");
 const { findDataframe } = require("../dataframe/dataframe.service");
+const userResolver = require("../middlewares/user.Resolver");
 
 
 
@@ -48,4 +49,4 @@ async function findDatasetName(req) {
 
 
 
-module.exports = buildApiHandler([controller]);
+module.exports = buildApiHandler([userResolver,controller]);

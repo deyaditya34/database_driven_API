@@ -2,6 +2,7 @@ const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
 const { searchDatasetByID } = require("../dataset/dataset.service");
 const { insertDataframe } = require("./dataframe.service");
+const userResolver = require("../middlewares/user.Resolver");
 
 async function controller(req, res) {
   let parsedQueriesArr = queryProcess(req);
@@ -43,4 +44,4 @@ function queryProcess(req) {
   return result;
 }
 
-module.exports = buildApiHandler([validateParams, controller]);
+module.exports = buildApiHandler([userResolver,validateParams, controller]);

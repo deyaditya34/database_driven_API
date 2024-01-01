@@ -2,6 +2,7 @@ const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
 const { searchDatasetByID } = require("../dataset/dataset.service");
 const { listDataframe } = require("./dataframe.service");
+const userResolver = require("../middlewares/user.Resolver");
 
 async function controller(req, res) {
   const datasetID = await validateDatasetId(req);
@@ -33,4 +34,4 @@ async function validateDatasetId(req) {
   return existingDataset._id;
 }
 
-module.exports = buildApiHandler([controller]);
+module.exports = buildApiHandler([userResolver,controller]);

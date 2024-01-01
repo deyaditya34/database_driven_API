@@ -6,6 +6,7 @@ const {
   dashboardDataframeLengthChecker,
 } = require("./dashboard.service");
 const { findDataframe } = require("../dataframe/dataframe.service");
+const userResolver = require("../middlewares/user.Resolver");
 
 async function controller(req, res) {
   const dataframeIDs = req.body.dataFrameID;
@@ -111,5 +112,5 @@ async function duplicateDataframeReq(dashboardID, dataframeIDs) {
   });
 }
 
-module.exports = buildApiHandler([validateParams, controller]);
+module.exports = buildApiHandler([userResolver,validateParams, controller]);
 

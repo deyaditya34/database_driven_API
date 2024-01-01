@@ -1,6 +1,7 @@
 const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
 const { findDashboardById } = require("./dashboard.service");
+const userResolver = require("../middlewares/user.Resolver");
 
 async function controller(req, res) {
   const { id } = req.query;
@@ -19,4 +20,4 @@ async function controller(req, res) {
   }
 }
 
-module.exports = buildApiHandler([controller]);
+module.exports = buildApiHandler([userResolver,controller]);

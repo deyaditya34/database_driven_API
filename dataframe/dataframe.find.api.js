@@ -1,6 +1,7 @@
 const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
 const { findDataframe } = require("./dataframe.service");
+const userResolver = require("../middlewares/user.Resolver");
 
 async function controller(req, res) {
   const dataFramdeId = req.query.dataFrameId;
@@ -23,4 +24,4 @@ async function controller(req, res) {
   }
 }
 
-module.exports = buildApiHandler([controller]);
+module.exports = buildApiHandler([userResolver,controller]);
