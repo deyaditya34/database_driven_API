@@ -6,7 +6,7 @@ const authService = require("./auth.service");
 const {
   createParamValidator,
   PARAM_KEY,
-} = require("../middlewares/params.validator.api");
+} = require("../middlewares/params.validator");
 
 async function controller(req, res) {
   const { username, password } = req.body;

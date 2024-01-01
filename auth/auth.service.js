@@ -71,8 +71,7 @@ async function changePassword(username, password, newPassword) {
 async function retrieveUserByUsername(username) {
   return db
     .getCollection(COLLECTION_NAMES.USERS)
-    .findOne({ username })
-    .projection({ _id: false, password: false });
+    .findOne({ username }, { projection: { _id: false, password: false } });
 }
 
 async function listUser() {
@@ -82,13 +81,13 @@ async function listUser() {
 }
 
 async function findUserByUSAndPWD(username, password) {
-  return db
-    .getCollection(COLLECTION_NAMES.USERS)
-    .findOne({
+  return db.getCollection(COLLECTION_NAMES.USERS).findOne(
+    {
       username,
       password: encryptPassword(password),
-    })
-    .projection({ _id: false, password: false });
+    },
+    { projection: { _id: false, password: false } }
+  );
 }
 
 module.exports = {

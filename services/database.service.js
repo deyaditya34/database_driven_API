@@ -9,7 +9,6 @@ async function initialise() {
   await client.connect();
 
   database = client.db(config.DB_NAME);
-  console.log("database -", database)
 }
 
 
@@ -19,6 +18,5 @@ function getCollection(collectionName) {
 
 module.exports = {
   initialise,
-  database,
   getCollection,
 }

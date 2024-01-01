@@ -2,7 +2,7 @@ const buildApiHandler = require("../api-utils/build-api-handler");
 const {
   createParamValidator,
   PARAM_KEY,
-} = require("../middlewares/params.validator.api");
+} = require("../middlewares/params.validator");
 const userResolver = require("../middlewares/user.Resolver");
 const authService = require("./auth.service");
 const { validateUsernameAndPassword } = require("./auth.utils");
@@ -26,4 +26,4 @@ const missingParamsValidator = createParamValidator(
   PARAM_KEY.BODY
 );
 
-module.exports = buildApiHandler([userResolver, missingParamsValidator, validateUsernameAndPassword, controller]);
+module.exports = buildApiHandler([missingParamsValidator, validateUsernameAndPassword, controller]);

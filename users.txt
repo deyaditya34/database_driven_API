@@ -1,0 +1,16 @@
+admin User :-
+
+username - adminUser
+password - admin@123
+token - eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluVXNlciIsImlhdCI6MTcwNDEyOTUxNX0.8vkxZYZ322A7L55RJSiO7BOImUltP2SD9Yj91no9ho0
+
+non-admin User :-
+
+username - nonadminUser
+password - admin@123
+token - eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im5vbmFkbWluVXNlciIsImlhdCI6MTcwNDEzMjQzOH0.QLNzuPucFC4oJX91_wzomn9Rw8pxG_2bcdTNwTShxQE
+
+
+username - nonadminUser1
+password - admin@123
+token - eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im5vbmFkbWluVXNlcjEiLCJpYXQiOjE3MDQxMzI1NDR9.7FNL9timv7GluUavXqCtUJZmUAmn1uiisGAD1LG1G-I

@@ -2,7 +2,7 @@ const httpError = require("http-errors");
 
 function checkAdminRights(req, res, next) {
   const { user } = req.body;
-
+  console.log(user)
   if (!user) {
     throw new httpError.Forbidden("No User found to check rights");
   }

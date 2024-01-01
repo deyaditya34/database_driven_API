@@ -2,15 +2,14 @@ const express = require("express");
 const config = require("./config");
 const database = require("./services/database.service");
 
+const errorHandler = require("./api-utils/error-handler");
 const requestLogger = require("./middlewares/requestLogger");
 const notFoundHandler = require("./api-utils/not-found-handler");
-const errorHandler = require("./api-utils/error-handler");
 
-const dataframeRouter = require("./dataframe/dataframe.router");
-const datasetRouter = require("./dataset/dataset.router.api");
-const dashboardRouter = require("./dashboard/dashboard.router.api");
 const authRouter = require("./auth/auth.router.api");
-const { ServerType } = require("mongodb");
+const datasetRouter = require("./dataset/dataset.router.api");
+const dataframeRouter = require("./dataframe/dataframe.router");
+const dashboardRouter = require("./dashboard/dashboard.router.api");
 
 async function start() {
   console.log("[INIT]: Connecting to database");
