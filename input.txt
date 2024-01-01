@@ -1,6 +1,0 @@
-Name Class Hobbies
-Aditya XII Badminton;Cricket
-Tashrif XI Cricket;Hockey
-Rituraj XII Kho-Kho;Football
-Kristi X Kabaddi;Cricket
-Manash IX Basketball;Football
