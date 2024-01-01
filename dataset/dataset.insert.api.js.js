@@ -2,13 +2,13 @@ const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
 const { parseCsvRecords } = require("../middlewares/csv.parser");
 const userResolver = require("../middlewares/user.Resolver");
-const { searchDatasetByID, insertData } = require("./dataset.service");
+const { searchDatasetById, insertData} = require("./dataset.service");
 const paramsValidator = require("../middlewares/params.validator")
 
 async function controller(req, res) {
   const {datasetId} = req.query;
   const {user} = req.body;
-  const DATASET_NAME = await findDataset(datasetId);
+  const DATASET_NAME = await findDataset(datasetId, user.username);
 
   let uploadedFile = req.file;
   let itemCollector = [];
@@ -42,8 +42,8 @@ async function controller(req, res) {
   });
 }
 
-async function findDataset(datasetId) {
-  let existingDatasetId = await searchDatasetByID(datasetId);
+async function findDataset(datasetId, username) {
+  let existingDatasetId = await searchDatasetById(datasetId, username);
 
   if (!existingDatasetId) {
     throw new httpError.BadRequest(`Field datasetId - '${datasetId}' is not valid.`)
