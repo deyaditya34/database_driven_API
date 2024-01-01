@@ -1,37 +1,22 @@
-const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
-const { searchDatasetByID } = require("../dataset/dataset.service");
-const { listDataframe } = require("./dataframe.service");
 const userResolver = require("../middlewares/user.Resolver");
+const { listDataframe } = require("./dataframe.service");
 
 async function controller(req, res) {
-  const datasetID = await validateDatasetId(req);
-  const datasetIDStringify = datasetID.toString()
+  const { user } = req.body;
 
-  const queries = await listDataframe(datasetIDStringify);
+  const dataframeList = await listDataframe(user.username);
 
-  if (queries.length === 0) {
+  if (dataframeList.length === 0) {
     res.json({
-      message: `no saved queries for the datasetId ${datasetIDStringify}`
-    })
+      message: `no dataframe saved for the user - ${user.username}`,
+    });
   } else {
     res.json({
-      message: "queries found",
-      data: queries
-    })
+      message: "dataframe found",
+      data: dataframeList,
+    });
   }
 }
 
-async function validateDatasetId(req) {
-  const datasetId = req.query.datasetId;
-
-  const existingDataset = await searchDatasetByID(datasetId);
-
-  if (!existingDataset) {
-    throw new httpError.BadRequest(`datbaseId ${datasetId} is invalid.`);
-  }
-
-  return existingDataset._id;
-}
-
-module.exports = buildApiHandler([userResolver,controller]);
+module.exports = buildApiHandler([userResolver, controller]);

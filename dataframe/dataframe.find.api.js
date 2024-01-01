@@ -1,16 +1,17 @@
 const httpError = require("http-errors");
 const buildApiHandler = require("../api-utils/build-api-handler");
-const { findDataframe } = require("./dataframe.service");
+const { findDataframeById } = require("./dataframe.service");
 const userResolver = require("../middlewares/user.Resolver");
 
 async function controller(req, res) {
+  const {user} = req.body;
   const dataFramdeId = req.query.dataFrameId;
 
   if (!dataFramdeId) {
     throw new httpError.BadRequest(`"dataFrameId" is missing from req.query.`);
   }
 
-  let query = await findDataframe(dataFramdeId);
+  let query = await findDataframeById(dataFramdeId, user.username);
 
   if (!query) {
     res.json({

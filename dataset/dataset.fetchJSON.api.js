@@ -5,6 +5,7 @@ const { searchDatasetByID, getDataPaginated } = require("./dataset.service");
 const userResolver = require("../middlewares/user.Resolver");
 
 async function controller(req, res) {
+  const {user} = req.body;
   const dataFrame = await validateDataframeId(req);
 
   const filter = dataFrame.filters;

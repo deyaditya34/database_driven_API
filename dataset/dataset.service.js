@@ -17,8 +17,8 @@ async function searchDatasetByName(datasetName) {
   return db.getCollection(config.COLLECTION_NAMES.DATASET).findOne(datasetName);
 }
 
-async function searchDatasetByID(datasetId) {
-  return db.getCollection(config.COLLECTION_NAMES.DATASET).findOne({_id: new ObjectId(datasetId)})
+async function searchDatasetByID(datasetId, username) {
+  return db.getCollection(config.COLLECTION_NAMES.DATASET).findOne({_id: new ObjectId(datasetId), username: username})
 }
 
 async function listDataset() {
